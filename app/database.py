@@ -1,17 +1,20 @@
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+from typing import Annotated
+from sqlalchemy import create_engine, Session
+from fastapi import Depends
 from sqlalchemy.orm import declarative_base
-from typing import AsyncGenerator
 
-engine = create_async_engine('sqlite:///./db.db', echo=True)
+DATABESE_URL = 'sqlite:///./db.db'
+engine = create_engine(DATABESE_URL)
 
-SessionLocal = async_sessionmaker(expire_on_commit=False,
-                                  class_=AsyncSession, bind=engine)
 Base = declarative_base()
 
 
-async def get_db() -> AsyncGenerator[AsyncSession | None]:
-    async with SessionLocal() as session:
+def get_db():
+    with Session(engine) as session:
         yield session
+
+
+SessionDp = Annotated[Session, Depends(get_db)]
 
 
 def init_db():
