@@ -5,4 +5,7 @@ engine = create_engine('sqlite:///./db.db', echo=True)
 
 Base = declarative_base()
 
-Base.metadata.create_all(bind=engine)
+
+def init_db():
+    print("Criando tabelas no banco de dados...")
+    Base.metadata.create_all(bind=engine)
