@@ -4,14 +4,12 @@ from datetime import datetime
 
 class UserBase(BaseModel):
     name: str = Field(..., min_length=2, max_length=50)
-    age: int = Field(..., gt=0, lt=100)
-    is_active: bool
     email: EmailStr
+    age: int = 0
 
 
 class UserCreated(UserBase):
-    password: str = Field(..., min_length=8, max_length=20)
-    created_at: datetime
+    password: str = Field(..., min_length=4, max_length=20)
 
 
 class UserUpdate(BaseModel):

@@ -15,19 +15,22 @@ def get_users(db: Session, skip: int = 0, limit: int = 10):
 
 def check_email(db: Session, email: str):
     # valida se email ja cadastrado
-    find_email: User | None = db.query(
+    find_email = db.query(
         User).filter(User.email == email).first()
+
     if not find_email:
         return False
     return find_email
 
 
-def created_user(db: Session, user: UserCreated):
+def created_new_user(db: Session, user: UserCreated):
     # geraldo senha hash
     hashed_password = bcrypt.hash(user.password)
+
     new_user = User(
         name=user.name,
         email=user.email,
+        age=user.age,
         hashed_password=hashed_password
     )
     db.add(new_user)
