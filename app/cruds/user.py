@@ -1,4 +1,3 @@
-from os import name
 from sqlalchemy.orm import Session
 from app.schemas.user import UserCreated
 from passlib.hash import bcrypt
@@ -6,7 +5,12 @@ from app.models.user import User
 
 
 def get_user(db: Session, user_id: int):
-    ...
+    find_user = db.query(
+        User).filter(User.id == user_id).first()
+
+    if not find_user:
+        return False
+    return find_user
 
 
 def get_users(db: Session, skip: int = 0, limit: int = 10):
@@ -14,7 +18,7 @@ def get_users(db: Session, skip: int = 0, limit: int = 10):
 
 
 def check_email(db: Session, email: str):
-    # valida se email ja cadastrado
+
     find_email = db.query(
         User).filter(User.email == email).first()
 
@@ -24,7 +28,7 @@ def check_email(db: Session, email: str):
 
 
 def created_new_user(db: Session, user: UserCreated):
-    # geraldo senha hash
+    # hash password generator
     hashed_password = bcrypt.hash(user.password)
 
     new_user = User(
