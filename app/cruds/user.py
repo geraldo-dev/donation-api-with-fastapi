@@ -5,16 +5,20 @@ from app.models.user import User
 
 
 def get_user(db: Session, user_id: int):
-    find_user = db.query(
+    user = db.query(
         User).filter(User.id == user_id).first()
 
-    if not find_user:
+    if not user:
         return False
-    return find_user
+    return user
 
 
-def get_users(db: Session, skip: int = 0, limit: int = 10):
-    ...
+def get_users(db: Session, skip: int, limit: int) -> list[User] | bool:
+    users = db.query(User).offset(skip).limit(limit).all()
+
+    if not users:
+        return False
+    return users
 
 
 def check_email(db: Session, email: str):

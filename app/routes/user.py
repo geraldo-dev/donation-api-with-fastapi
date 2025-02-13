@@ -2,13 +2,21 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db, SessionLocal
 from typing import Annotated
-from app.cruds.user import check_email, created_new_user, get_user
+from app.cruds.user import check_email, created_new_user, get_user, get_users
 from app.models.user import User
 from app.schemas.user import UserResponse, UserCreated
 
 router = APIRouter()
 
 SessionDp = Annotated[Session, Depends(get_db)]
+
+
+@router.get('/', status_code=200, response_model=list[UserResponse])
+def get_all_user(db: SessionDp, skip: int = 0, limit: int = 10):
+    users: list[User] | bool = get_users(db=db, skip=skip, limit=limit)
+    if not users:
+        raise HTTPException(status_code=404, detail='no registered users')
+    return users
 
 
 @router.get('/{user_id}', status_code=200, response_model=UserResponse)
