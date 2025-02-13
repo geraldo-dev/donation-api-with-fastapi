@@ -9,8 +9,8 @@ class UserBase(BaseModel):
     email: EmailStr
 
 
-class UserCreated(BaseModel):
-    hashed_password: str = Field(..., min_length=8, max_length=20)
+class UserCreated(UserBase):
+    password: str = Field(..., min_length=8, max_length=20)
     created_at: datetime
 
 
@@ -21,6 +21,6 @@ class UserUpdate(BaseModel):
     email: EmailStr | None
 
 
-class UserResponse(BaseModel):
+class UserResponse(UserBase):
     id: int
     created_at: datetime
