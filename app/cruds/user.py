@@ -1,3 +1,4 @@
+from os import name
 from sqlalchemy.orm import Session
 from app.schemas.user import UserCreated
 from passlib.hash import bcrypt
@@ -24,6 +25,15 @@ def check_email(db: Session, email: str):
 def created_user(db: Session, user: UserCreated):
     # geraldo senha hash
     hashed_password = bcrypt.hash(user.password)
+    new_user = User(
+        name=user.name,
+        email=user.email,
+        hashed_password=hashed_password
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
 
 
 def updated_user(db: Session, user: UserCreated):
