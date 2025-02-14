@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.database import get_db, SessionLocal
+from app.database import get_db
 from typing import Annotated
 from app.cruds.user import check_email, created_new_user, get_user, get_users
 from app.models.user import User
-from app.schemas.user import UserResponse, UserCreated
+from app.schemas.user import UserResponse, UserCreated, Userlogin
+from app.cruds.auth import get_password_hash
 
 router = APIRouter()
 
@@ -29,6 +30,9 @@ def get_by_user(db: SessionDp, user_id: int):
 
 @router.post('/', status_code=201, response_model=UserResponse)
 def create_user(db: SessionDp, user: UserCreated):
+    # hash password generator
+    hashed_password = get_password_hash(user.password)
+    user.password = hashed_password
 
     existing_user = check_email(db, user.email)
 
@@ -36,3 +40,14 @@ def create_user(db: SessionDp, user: UserCreated):
         raise HTTPException(status_code=400, detail='email already registered')
 
     return created_new_user(db=db, user=user)
+
+
+@router.post('/login', status_code=200, response_model=UserResponse)
+def login(db: SessionDp, user: Userlogin):
+
+    existing_user = check_email(db, user.email)
+
+    if not existing_user:
+        raise HTTPException(status_code=400, detail='email nao encontrado')
+
+    # return created_new_user(db=db, user=user)
