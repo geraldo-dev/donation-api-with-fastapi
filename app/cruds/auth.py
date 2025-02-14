@@ -6,10 +6,8 @@ from app.models.user import User
 from app.config import settings
 
 # refatora
-from typing import Annotated
-from fastapi import Depends, HTTPException
-from app.database import get_db
-SessionDp = Annotated[Session, Depends(get_db)]
+from app.database import SessionDp
+from fastapi import HTTPException
 
 
 def check_email(db: Session, email: str):

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
 from typing import Annotated
@@ -7,9 +7,12 @@ from app.models.user import User
 from app.schemas.user import UserResponse, UserCreated, Userlogin, UserloginResponse
 from app.cruds.auth import create_access_token, get_password_hash, check_email, authenticate_user
 
+from app.database import SessionDp
+
+
 router = APIRouter()
 
-SessionDp = Annotated[Session, Depends(get_db)]
+# SessionDp = Annotated[Session, Depends(get_db)]
 
 
 @router.get('/', status_code=200, response_model=list[UserResponse])
