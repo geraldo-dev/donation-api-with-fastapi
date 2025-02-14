@@ -20,16 +20,6 @@ def get_users(db: Session, skip: int, limit: int) -> list[User] | bool:
     return users
 
 
-def check_email(db: Session, email: str):
-
-    find_email = db.query(
-        User).filter(User.email == email).first()
-
-    if not find_email:
-        return False
-    return find_email
-
-
 def created_new_user(db: Session, user: UserCreated):
     new_user = User(
         name=user.name,

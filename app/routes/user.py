@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
 from typing import Annotated
-from app.cruds.user import check_email, created_new_user, get_user, get_users
+from app.cruds.user import created_new_user, get_user, get_users
 from app.models.user import User
-from app.schemas.user import UserResponse, UserCreated, Userlogin
-from app.cruds.auth import get_password_hash
+from app.schemas.user import UserResponse, UserCreated, Userlogin, UserloginResponse
+from app.cruds.auth import create_access_token, get_password_hash, check_email, authenticate_user
 
 router = APIRouter()
 
@@ -42,12 +42,15 @@ def create_user(db: SessionDp, user: UserCreated):
     return created_new_user(db=db, user=user)
 
 
-@router.post('/login', status_code=200, response_model=UserResponse)
+@router.post('/login', status_code=200, response_model=UserloginResponse)
 def login(db: SessionDp, user: Userlogin):
 
-    existing_user = check_email(db, user.email)
+    existing_user = authenticate_user(
+        db=db, email=user.email, password=user.password)
 
     if not existing_user:
-        raise HTTPException(status_code=400, detail='email nao encontrado')
+        raise HTTPException(status_code=400, detail='Invalid credentials')
+    else:
+        access_token = create_access_token(data={'sub': existing_user.name})
 
-    # return created_new_user(db=db, user=user)
+        return {"access_token": access_token, "token_type": "bearer"}
